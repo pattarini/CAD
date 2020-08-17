@@ -1,4 +1,6 @@
-
+/* This short code generates the Leitz 0.80 darkfield condenser plug with the geometry pulled from Leitz catalogue illustration */
+/* Need as input the Iris diameter   */
+/*run in OpenSCAD*/
 
 //Diameter of the iris mm
 iris_diam = 25;
