@@ -1,8 +1,9 @@
- // design of darkfield objective funnel stops
+ // design of objective funnel stops for darkfield, luminance, 3D, dispersion staining etc..
 // OpenSCAD file
 // of all types to fit into microscope objectives from the foreseeable past.
 
 // Giorgio Pattarini Oktober-November 2021
+// Released under CC0 
 
 
 
@@ -19,8 +20,7 @@ Model="Funnel neck fit"; //[Funnel neck fit, Funnel tab flange, Funnel flush fla
 
 //Choice of fitting, the main contact and centering between funnel and objective
 fitting="Press fit"; //[Screw thread, Press fit, Straight, Fake thread]
-// For funnel models only, tip can be integrated (one piece, more solid) or separated (interchangeable, more options, neater aperture) 
-tip_style="Fixed tip"; //[Fixed tip, Interchangeable tip]
+
 
 
 
@@ -40,13 +40,14 @@ passo_vite=0.51;  //italian because the english is already in use
 //Funnel total height (it is 0 for flat ) (does not include base thickness)
 funnel_height=33.3;
 
+
 // Outer diameter of the funnel tip (will get overridden by fit diameter for flat and tip-fit models)(0.1 for automatic) 
 tip_diameter=0.1;
 
 // Heigth of the tip, (will override total height if larger) (is overridden only for tip-fit tub, by minimum fit height) (0.1 for automatic) 
 tip_height= 0.1; // heigth tip
 
-// Outer diameter of the funnel main tube (may get overridden if there is no space)(0.1 for automatic) 
+// Outer diameter of the funnel base tube (may get overridden if there is no space)(0.1 for automatic) 
 tube_diameter= 0.1;
 
 //Height of the tapered cone (funnels only)(leave 0.1  for auto) (put zero for a step)
@@ -93,13 +94,40 @@ baffleantall=5;
 flange_baffle_diameter = 0.1; //
 
 
+/*[Interchangeable funnel cap]*/
+
+// For funnel models only, tip can be integrated (one piece, more solid) or separated (interchangeable, more options, neater aperture) 
+tip_style="Fixed tip"; //[Fixed tip, Interchangeable tip]
+
+// For Interchangeable tip funnels, choose what to print
+inter_print="One base and one tip"; //[ "One base and one tip", "Base only", "Tip only"]
+
+// adjust the interference between base and tip so it fits right (acts on caps)
+cap_fit_angle=3;
 
 
 
-/*[ Geometry and print tweaks]*/
+
+/*[Render and print tweaks]*/
 
 // Cuts half of the body so the inside is visible 
 cross_section="Full body";//[Full body, Cross section]
+
+//build geometries slightly larger to avoid issues in intersections and differences
+ overmaterial=0.001; 
+ 
+ // render quality, number of divisions in rotations, global $fn (higher, smoother 3D, but longer processing time)(12 crude)(30 normal) (60 fine)
+divs= 30; //  
+
+// screw design, circumferential step (heavily affect processing time) (1mm is ok )
+screw_resolution = 1.1;  // in mm
+// unknown tweak with unknown results
+cylrad=7.5;
+
+
+
+/*[ Geometry tweaks]*/
+
 
 // Normal wall thickness of the parts (funnel walls, tabs etc have this thickness by default)(1.5mm robust, 1 mm normal, 0.5mm risky)(wall thickness may reduce inner aperture diameter)
 wallth_normal=1.1;
@@ -110,6 +138,34 @@ wallth=wallth_normal;
 maxoverhang=30;
 overhang=maxoverhang;
 rake_overhang=tan(90-maxoverhang);
+
+// number of braces supporting the stop(spiders)(only for aperture printed down)(otherwise 4 spiders & no discussions)
+spidernumber=3;
+
+// width spiders, to make them as thin as possible
+wspider = 0.8;
+
+// the spider can be made curved, to smooth out diffraction spikes (works only for bottom print and if the stop button is centered with the aperture)
+spider_curve="Curved"; //["Curved", "Straight"]
+
+// for bottom print, the edge of apertures can be made recessed so comes out better from the print (otherwise are printed directly on the plate)
+aperture_recess="Recessed edge"; //["Recessed edge", "Front edge"]
+
+
+
+
+
+
+/*[Fitting tweaks]*/
+
+// Tweak the size of the relief cuts for press fit models (Large, 1 makes for better print and fit, but takes space, 1/2 takes half space, 0 no cuts)
+pressfit_cut_size=1; //[1, 0.7, 0]
+
+// Tweak the standard interference for press fit models (0.2 mm recommended)
+pressfit_interference_diameter=0.2;
+
+// changes the position of the notches for screwing
+notch_override=0.01;
 
 
 // fitting ring
@@ -125,44 +181,17 @@ tab_height=0;
 tab_thickness_override=0.0;
 
 
-// Tweak the size of the relief cuts for press fit models (Large, 1 makes for better print and fit, but takes space, 1/2 takes half space, 0 no cuts)
-pressfit_cut_size=1; //[1, 0.7, 0]
 
-// Tweak the standard interference for press fit models (0.2 mm recommended)
-pressfit_interference_diameter=0.2;
  
-// number of braces supporting the stop(spiders)(only for aperture printed down)(otherwise 4 spiders & no discussions)
-spidernumber=3;
-
-// width spiders, to make them as thin as possible
-wspider = 0.8;
-
-// the spider can be made curved, to smooth out diffraction spikes (works only for bottom print and if the stop button is centered with the aperture)
-spider_curve="Curved"; //["Curved", "Straight"]
-
-// for bottom print, the edge of apertures can be made recessed so comes out better from the print (otherwise are printed directly on the plate)
-aperture_recess="Recessed edge"; //["Recessed edge", "Front edge"]
-
-// For Interchangeable tip funnels, choose what to print
-inter_print="One base and one tip"; //[ "One base and one tip", "Base only", "Tip only"]
-
-
-//build geometries slightly larger to avoid issues in intersections and differences
- overmaterial=0.001; 
- 
- // render quality, number of divisions in rotations, global $fn (higher, smoother 3D, but longer processing time)
-divs= 12; //  
-
-// screw design, circumferential step (heavily affect processing time) (1mm is ok )
-screw_resolution = 1.1;  // in mm
-// unknown tweak with unknown results
-cylrad=7.5;
 
 
 
 
 
-/*[Make an array of pieces]*/
+
+
+
+/*  [Make an array of pieces]
 
 // number of stop diameters  (it generates several caps together with the funnel) put 0 for no caps, With 1, it makes the minimum
 rcapsteps=4;
@@ -176,6 +205,8 @@ offcapsteps=1;
 offcapmin=0; 
 // max stop offset, distance from center
 offcapmax=1; 
+
+*/
 
 
  // end variables--------------
@@ -601,7 +632,7 @@ module crossection(){
      
     difference(){
         children();
-        rotate(-90,[0,0,1])
+        rotate(90,[0,0,1])
     linear_extrude(200, center=true)
        polygon(
 points=[
@@ -1722,6 +1753,7 @@ module capcut2 (  tiprad, thick, fitheigth, numbertabs, cutdepth, interference) 
     
 // littlebit case-sensitive, different builders for different models  
 // ideally all choiches should have been sorted out in the calculations, but, not so easy 
+  
     
 module builder() {
  // builds the funnel, one if for each type)
@@ -1738,7 +1770,7 @@ if ((Model=="Funnel neck fit" || Model=="Funnel tab flange" )
         
     union(){
    
-    screw_notch_cut (flange_rad_build-wallth, -flange_height_build) 
+    screw_notch_cut (flange_rad_build-wallth+notch_override, -flange_height_build) 
         
     flange_standard(fit_bore_rad_build, flange_rad_build, flange_height_build);       
             
@@ -1767,7 +1799,7 @@ else if ((Model=="Funnel flush flange")
       
      clean_negative(){
       
-     screw_notch_cut (flange_rad_build,0)
+     screw_notch_cut (flange_rad_build+notch_override,0)
          {
     translate([0,0, flange_height_build]) {
           
@@ -1784,7 +1816,7 @@ else if ((Model=="Funnel flush flange")
     fit_ring_universal(fit_rad_out, fit_ring_rad_out, fit_ring_rad_in, fit_ring_height_build, tab_relief, passo_vite, rake_overhang,  tab_height);
          }
         
-    translate([0,0, tot_height_build])
+    translate([0,0, tot_height_build+flange_height_build])
     captabcut(  tip_rad_build, wallth, 2*wallth,3,  2*wallth, 0)
     funneltip(tot_height_build, tube_rad_build, tip_rad_build, tip_height_build, flange_height_build, aperture_od/2, main_aperture_off_center, angle_stops);
     }}}
@@ -1795,7 +1827,7 @@ else if (Model== "Tub tip fit" || Model=="Tub sleeve fit"){
        
     clean_negative(){  
          
-     screw_notch_cut (flange_rad_build, flange_height_build + tot_height_build) {
+     screw_notch_cut (flange_rad_build+notch_override, flange_height_build + tot_height_build) {
         
      translate([0,0,tot_height_build])
         
@@ -1815,7 +1847,7 @@ else if (Model== "Tub tip fit" || Model=="Tub sleeve fit"){
 else if (Model=="Flat disk"){
     clean_negative(){
     
-    screw_notch_cut (fit_ring_rad_out, tot_height_build)      
+    screw_notch_cut (fit_ring_rad_out+notch_override, tot_height_build)      
     {
         rotate(180, [1,0,0])
     flat_aperture(fit_ring_rad_out, aperture_od, main_aperture_off_center, angle_stops); 
@@ -1832,6 +1864,8 @@ else if (Model=="Flat disk"){
                       
     flange_flush(fit_ring_rad_in, fit_ring_rad_out, flange_height_build);
     }}}}
+  
+  
     
 else if (Model=="Flat tab flange"){
     clean_negative(){
@@ -1856,7 +1890,8 @@ else if (Model=="Flat tab flange"){
     
   
 
-    // build caps
+
+// build caps for interchangeable tip model
 if( (Model=="Funnel neck fit" || Model=="Funnel tab flange"  ||Model=="Funnel flush flange")
     &&
     (tip_style== "Interchangeable tip") 
@@ -1867,7 +1902,7 @@ if( (Model=="Funnel neck fit" || Model=="Funnel tab flange"  ||Model=="Funnel fl
         // makes the cap
         translate([ flange_rad_build + tip_rad_build +2, 0,0])
         
-        capcut2(tip_rad_build, wallth, 2*wallth,3,  2*wallth, 5)
+        capcut2(tip_rad_build, wallth, 2*wallth,3,  2*wallth,cap_fit_angle )
         
         intercap(tip_rad_build, 3*wallth, aperture_od, main_aperture_off_center, angle_stops);
     }
@@ -1881,10 +1916,13 @@ if( (Model=="Funnel neck fit" || Model=="Funnel tab flange"  ||Model=="Funnel fl
   
 
 
+
+
+// builds the funnel
+
 crossection() builder();
   
 
 
   
-    
-//spidervanes(20, 1, 16, 6, 1, 3);
+ // enjoy!
